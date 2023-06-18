@@ -12,3 +12,14 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+.MuiInputLabel-root {
+  color: #8899a6 !important;
+}
+.MuiTextField-root {
+  color: white !important;
+}
+
+.error {
+  color: red;
+}
