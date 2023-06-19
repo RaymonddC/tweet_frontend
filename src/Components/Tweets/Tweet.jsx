@@ -24,7 +24,7 @@ export const Tweet = () => {
 
   return (
     <div>
-      <KeepMountedModal icon={<AddIcon />} button={<span>Tweet Reply</span>} open={openAdd} setOpen={setOpenAdd} formBox={<NewTweet handleClose={() => setOpenAdd(false)} tweet={null} replyTo={replyId} />} />
+      <KeepMountedModal icon={<AddIcon />} button={<span>Tweet Reply</span>} open={openAdd} setOpen={setOpenAdd} formBox={<NewTweet handleClose={() => setOpenAdd(false)} tweet={selected} replyTo={replyId} />} />
       <InfiniteScroll
         pageStart={1}
         loadMore={(page) => {
@@ -40,13 +40,8 @@ export const Tweet = () => {
       >
         {tweets.map((value, key) => {
           return (
-            <div
-            // onClick={() => {
-            //   setreplyId(value.id);
-            //   setOpenAdd(true);
-            // }}
-            >
-              <TweetCard key={key} values={value} comment={setOpenAdd} reply={setreplyId} />
+            <div>
+              <TweetCard key={key} values={value} modal={setOpenAdd} reply={setreplyId} tweet={setSelected} />
             </div>
           );
         })}

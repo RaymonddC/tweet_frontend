@@ -19,13 +19,17 @@ export const Layout = (props) => {
     <div className="flex dark:bg-black ">
       <Sidebar />
       <div
-        className="md:ml-[275px] grow dark:text-white   md:flex flex-col  
+        className="lg:ml-[275px] sm:ml-[80px] ml-0 grow dark:text-white   md:flex flex-col  
        h-[100vh] md:min-h-[full]  w-full dark:bg-black  md:grow  md:w-[50vw]"
       >
         <Navbar>{props.children[0]}</Navbar>
         {props.children[1]}
       </div>
-      <RightSideBar />
+      {/* . */}
+      <div className="flex flex-col">
+        <RightSideBar />
+        {/* <div className="grow bg-black min-h-full"></div> */}
+      </div>
     </div>
   );
 };

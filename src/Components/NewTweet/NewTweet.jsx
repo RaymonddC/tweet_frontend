@@ -3,7 +3,7 @@ import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { postTweetAsync } from '../../Features/Tweet/TweetSlice';
+import { postTweetAsync, updateTweet } from '../../Features/Tweet/TweetSlice';
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   // name: Yup.string().email('Invalid name').required('Required'),
@@ -43,9 +43,11 @@ export const NewTweet = (props) => {
       image: '',
     });
     setViewImage(props.tweet?.image);
-  }, [props?.tweet?.caption]);
+  }, [props?.tweet]);
 
   console.log(replyId, 'replyId<+++++++==');
+  const { user } = useSelector((state) => state.user);
+  if (!user || Object.keys(user).length == 0) return '';
   return (
     <div className="px-[1em] py-[0.5em]">
       <div className="content flex gap-[0.5em]">
@@ -59,7 +61,12 @@ export const NewTweet = (props) => {
             validationSchema={DisplayingErrorMessagesSchema}
             onSubmit={(values, { resetForm }) => {
               try {
-                dispatch(postTweetAsync({ ...values, replyId }));
+                if (props.tweet) {
+                  dispatch(updateTweet({ id: props.tweet?.id, ...values }));
+                } else {
+                  dispatch(postTweetAsync({ ...values, replyId }));
+                }
+
                 resetForm();
                 setViewImage(null);
               } catch (error) {

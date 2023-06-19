@@ -11,6 +11,9 @@ import { keepLoginAsync } from './Features/User/UserSlice';
 import { Verify } from './Pages/Verify/Verify';
 import { Profile } from './Pages/Profile/Profile';
 import { DetailTweet } from './Pages/DetailTweet/DetailTweet';
+import { Account } from './Pages/Account/Account';
+import VerifRoutes from './utils/VerifRoute';
+import AccountRoute from './utils/AccountRoute';
 
 function App() {
   const dispatch = useDispatch();
@@ -40,28 +43,46 @@ function App() {
           <Route
             path="/activation"
             element={
-              <Layout>
-                <div>a</div>
-                <Verify />
-              </Layout>
+              <AccountRoute>
+                <Layout>
+                  <div></div>
+                  <Verify />
+                </Layout>
+              </AccountRoute>
             }
           />
           <Route
             path="/profile"
             element={
-              <Layout>
-                <></>
-                <Profile />
-              </Layout>
+              <VerifRoutes>
+                <Layout>
+                  <></>
+                  <Profile />
+                </Layout>
+              </VerifRoutes>
             }
+            exact
           />
           <Route
             path="/details/:id"
             element={
-              <Layout>
-                <></>
-                <DetailTweet />
-              </Layout>
+              <VerifRoutes>
+                <Layout>
+                  <></>
+                  <DetailTweet />
+                </Layout>
+              </VerifRoutes>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <VerifRoutes>
+                <Layout>
+                  <></>
+                  <Account />
+                </Layout>
+              </VerifRoutes>
             }
           />
           {/* <Route path="/register" element={<Login />} /> */}

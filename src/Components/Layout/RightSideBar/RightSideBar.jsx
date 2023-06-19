@@ -17,7 +17,7 @@ export const RightSideBar = () => {
 
   return (
     <div
-      className="rightBar grow md:grow h-[100%]   dark:bg-black border dark:text-white border-[#808080]  md:flex flex-col  p-[1em] hidden mx-auto
+      className="rightBar grow md:grow min-h-[100%]   dark:bg-black border dark:text-white border-[#808080]  md:flex flex-col  p-[1em] hidden 
     
     "
     >

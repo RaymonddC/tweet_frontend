@@ -7,10 +7,11 @@ const token = localStorage.getItem('token') ? localStorage?.getItem('token') : '
 const initialState = {
   list: [],
   tweet: {},
-  commentList: {},
+  commentList: [],
   comment: {},
   isSubmitting: false,
   hasMore: true,
+  hasMoreComment: false,
 };
 
 export const TweetSlice = createSlice({
@@ -28,6 +29,17 @@ export const TweetSlice = createSlice({
     onSetHasMore: (initialState, action) => {
       console.log(action.payload, initialState.list.length);
       initialState.hasMore = initialState.list.length >= action.payload ? false : true;
+    },
+    onNewCommentList: (initialState, action) => {
+      initialState.commentList = [];
+      initialState.hasMore = true;
+    },
+    onGetCommentList: (initialState, action) => {
+      initialState.commentList = [...initialState.commentList, ...action.payload];
+    },
+    onSetHasMoreComment: (initialState, action) => {
+      console.log(action.payload, initialState.list.length);
+      initialState.hasMoreComment = initialState.commentList.length >= action.payload ? false : true;
     },
     onSaveTweet: (initialState, action) => {
       console.log(action);
@@ -67,14 +79,33 @@ export const getTweetsAsync = (values) => async (dispatch) => {
 export const getTweetAsync = (id) => async (dispatch) => {
   try {
     // console.log('getProduct');
-    const postDetail = await axios.get(`${process.env.REACT_APP_API_URL}/tweet/${id}`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/tweets/${id}`, {
       headers: {
         Authorization: `bearer ${token}`,
       },
     });
-    // dispatch(onGetProduct(response.data));
+    // console.log(response);
+    dispatch(onSaveTweet(response.data.data));
+    dispatch(onNewCommentList());
   } catch (error) {
-    console.log('error');
+    toast.error(error?.response?.data?.message || error?.message);
+  }
+};
+
+export const getCommentsTweetAsync = (values) => async (dispatch) => {
+  try {
+    // console.log('getProduct');
+    let param = { page: values?.page || 1, limitPage: 5 };
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/tweets/comments/${values.id}`, {
+      headers: {
+        Authorization: `bearer ${token}`,
+      },
+    });
+    console.log(response);
+    dispatch(onGetCommentList(response?.data?.data));
+    dispatch(onSetHasMoreComment(response?.data?.pageCount));
+  } catch (error) {
+    toast.error(error?.response?.data?.message || error?.message);
   }
 };
 
@@ -98,8 +129,13 @@ export const postTweetAsync = (values) => async (dispatch) => {
       }
     );
 
-    dispatch(onNewList());
-    dispatch(getTweetsAsync());
+    if (replyId) {
+      dispatch(onNewCommentList());
+      dispatch(getCommentsTweetAsync({ id: replyId }));
+    } else {
+      dispatch(onNewList());
+      dispatch(getTweetsAsync());
+    }
     toast.success('Tweet Created');
   } catch (error) {
     console.log(error);
@@ -107,5 +143,62 @@ export const postTweetAsync = (values) => async (dispatch) => {
   }
 };
 
-export const { onNewList, onSetHasMore, onGetList, onSaveTweet, toggleBtn } = TweetSlice.actions;
+export const deleteTweet = (value) => async (dispatch) => {
+  try {
+    const { id } = value;
+    let result = await axios.delete(`${process.env.REACT_APP_API_URL}/tweets/${id}`, {
+      headers: {
+        Authorization: `bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    if (result.status === 200) {
+      if (result.data.reply_id) {
+        dispatch(onNewCommentList());
+        dispatch(getCommentsTweetAsync({ id: result?.replyId }));
+      } else {
+        dispatch(onNewList());
+        dispatch(getTweetsAsync());
+      }
+      toast.success('Tweet Deleted!');
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
+
+export const updateTweet = (values) => async (dispatch) => {
+  try {
+    const { id, caption, image } = values;
+    console.log(id);
+    const result = axios.put(
+      `${process.env.REACT_APP_API_URL}/tweets/${id}`,
+      {
+        caption,
+        image,
+      },
+      {
+        headers: {
+          Authorization: `bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    if (result.data?.reply_id) {
+      dispatch(onNewCommentList());
+      dispatch(getCommentsTweetAsync({ id: result?.replyId }));
+    } else {
+      dispatch(onNewList());
+      dispatch(getTweetsAsync());
+    }
+    toast.success('Tweet Updated');
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
+
+export const { onNewList, onSetHasMore, onGetList, onSaveTweet, onGetCommentList, onSetHasMoreComment, onNewCommentList, toggleBtn } = TweetSlice.actions;
 export default TweetSlice.reducer;

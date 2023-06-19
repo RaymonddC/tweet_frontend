@@ -6,6 +6,10 @@ import { FaRegComment } from 'react-icons/fa';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import { Link } from 'react-router-dom';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteTweet } from '../../Features/Tweet/TweetSlice';
 
 function dateDiffInDays(a, b) {
   const _MS_PER_MINUTE = 1000 * 60;
@@ -19,15 +23,16 @@ function dateDiffInDays(a, b) {
 
 export const TweetCard = (props) => {
   // console.log(props.values, 'tweet');
-
+  const { user } = useSelector((state) => state.user);
   const time = dateDiffInDays(new Date(), new Date(props?.values?.createdAt));
+  let dispatch = useDispatch();
 
   return (
     <div className="flex border border-[#808080] p-[1em] ">
       <div className="content flex gap-[0.5em] w-full">
         <Link to={'/profile'}>
           <div className="imgProfile">
-            <img src={`${process.env.REACT_APP_API_URL}/UserProfile/default.png`} alt={`${process.env.REACT_APP_API_URL}/UserProfile/default.png`} className="max-h-[3em]" />
+            <img src={`${process.env.REACT_APP_API_URL}/UserProfile/${props.values?.User?.profilePicture || 'default.png'}`} alt={`${process.env.REACT_APP_API_URL}/UserProfile/default.png`} className="max-h-[3em]" />
           </div>
         </Link>
         <div className="contentCaption w-full">
@@ -38,6 +43,7 @@ export const TweetCard = (props) => {
                 {props?.values?.User?.official ? (
                   <div className="icon text-white">
                     <VerifiedRoundedIcon />
+                    {/* {props.values.User.official} */}
                   </div>
                 ) : (
                   ''
@@ -53,25 +59,30 @@ export const TweetCard = (props) => {
             <div className="caption text-left">{props?.values?.caption}</div>
             {props?.values?.media ? (
               <div className="image flex justify-center">
-                <img className="max-h-[400px]" src={`${process.env.REACT_APP_API_URL}/tweetImages/${props?.values?.media}`} alt="" si />
+                <img className="max-h-[400px]" src={`${process.env.REACT_APP_API_URL}/tweetImages/${props?.values?.media}`} alt="" />
               </div>
             ) : (
               ' '
             )}
           </Link>
-          <div className="buttons flex items-center justify-around">
+          <div className="buttons flex items-center justify-around relative">
             <div
               className="comment"
               onClick={() => {
                 console.log(props.values.id);
                 props.reply(props.values.id);
-                props.comment(true);
+                props.modal(true);
               }}
             >
               <FaRegComment size={'17px'} />
             </div>
             <div className="retweet"></div>
-            <div className="like">
+            <div
+              className="like"
+              onClick={() => {
+                console.log('like');
+              }}
+            >
               <FavoriteBorderOutlinedIcon fontSize="small" />
             </div>
             <div className="view flex gap-[1em] items-center">
@@ -79,6 +90,29 @@ export const TweetCard = (props) => {
               <p className="text-sm">{props?.values?.viewed + 1}</p>
             </div>
             <div className="share"></div>
+            {user.id == props.values.user_id ? (
+              <div className="flex gap-3 absolute right-3">
+                <div
+                  className="update"
+                  onClick={() => {
+                    props.tweet(props.values);
+                    props.modal(true);
+                  }}
+                >
+                  <ModeEditOutlineOutlinedIcon />
+                </div>
+                <div
+                  className="delete"
+                  onClick={() => {
+                    dispatch(deleteTweet({ id: props.values.id }));
+                  }}
+                >
+                  <DeleteOutlinedIcon sx={{ color: 'darkred' }} />
+                </div>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </div>

@@ -150,30 +150,32 @@ export const onRegister = (values) => async (dispatch) => {
   }
 };
 
-// export const updateUser = (data) => async (dispatch) => {
-//   try {
-//     const { id, username } = data;
-//     axios.put(
-//       process.env.REACT_APP_API_URL + `/users/${id}`,
-//       {
-//         username: username,
-//         // category_image: category_image,
-//       },
-//       {
-//         headers: {
-//           Authorization: `bearer ${token}`,
-//           'Content-Type': 'multipart/form-data',
-//         },
-//       }
-//     );
-//     toast.success('User Updated');
-//     dispatch(getCashiersAsync());
-//     console.log('done');
-//   } catch (error) {
-//     console.log(error);
-//     toast.error(error.message);
-//   }
-// };
+export const updateUser = (values) => async (dispatch) => {
+  try {
+    const { id, username, confirmPassword, image, bio, fullname } = values;
+    axios.put(
+      `${process.env.REACT_APP_API_URL}/users/${id}`,
+      {
+        username,
+        bio,
+        image,
+        fullname,
+        password: confirmPassword,
+      },
+      {
+        headers: {
+          Authorization: `bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    toast.success('User Updated');
+    dispatch(keepLoginAsync());
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
 
 // export const deleteUser = (value) => async (dispatch) => {
 //   try {
