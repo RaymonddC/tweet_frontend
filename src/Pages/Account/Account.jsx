@@ -22,13 +22,12 @@ import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutl
 // const notify = () => toast('Here is your toast.');
 
 const SignupSchema = Yup.object().shape({
-  username: Yup.string().required('Required'),
+  username: Yup.string(),
   confirmPassword: Yup.string()
     .matches(/[A-Z]/, 'Password at least have one uppercase char')
     .matches(/.*[0-9].*/, 'Password at least have 1 number')
     .matches(/.*\W.*/, 'Password at least have 1 special char (@,!,#, etc).')
-    .min(8, 'Use 8 characters or more for your password')
-    .required('Password is required'),
+    .min(8, 'Use 8 characters or more for your password'),
 });
 
 export const Account = () => {
