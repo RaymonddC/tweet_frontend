@@ -39,7 +39,7 @@ export const TweetCard = (props) => {
           <Link to={`/details/${props?.values?.id}`}>
             <div className="profile flex justify-between w-[100%]">
               <div className="details flex gap-[0.3em] items-center text-[#808080]">
-                <p className="font-bold dark:text-white">{props?.values?.User?.fullName || 'Your Fullname'}</p>
+                <p className="font-bold dark:text-white">{props?.values?.User?.fullname || 'Your Fullname'}</p>
                 {props?.values?.User?.official ? (
                   <div className="icon text-white">
                     <VerifiedRoundedIcon />
