@@ -1,8 +1,9 @@
 import { TextField } from '@mui/material';
 import { Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import { postTweetAsync } from '../../Features/Tweet/TweetSlice';
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   // name: Yup.string().email('Invalid name').required('Required'),
@@ -13,8 +14,13 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 
 export const NewTweet = (props) => {
   const dispatch = useDispatch();
+  const isSubmit = useSelector((state) => state?.tweet?.isSubmitting);
 
   const toBlob = (imageRaw) => {
+    if (!imageRaw) {
+      setViewImage(null);
+      return;
+    }
     let file = imageRaw;
     let reader = new FileReader();
     reader.readAsDataURL(file);
@@ -25,81 +31,88 @@ export const NewTweet = (props) => {
   const [viewImage, setViewImage] = useState(null);
 
   const [initialData, setInitialData] = useState({
-    name: '',
+    caption: '',
     image: '',
   });
 
+  const replyId = props.replyTo;
+
   useEffect(() => {
     setInitialData({
-      caption: props.category?.category_name,
+      caption: props?.tweet?.caption || '',
       image: '',
     });
-    setViewImage(props.category?.category_image);
-    console.log('anjing');
-  }, [props.category?.category_name]);
-  console.log(props.category);
+    setViewImage(props.tweet?.image);
+  }, [props?.tweet?.caption]);
+
+  console.log(replyId, 'replyId<+++++++==');
   return (
-    <div>
-      <div className="content flex">
-        <div className="userImage w-[5em]">
-          <img src="" alt="" />a
+    <div className="px-[1em] py-[0.5em]">
+      <div className="content flex gap-[0.5em]">
+        <div className="userImage w-[3em]  flex justify-center">
+          <img src={`${process.env.REACT_APP_API_URL}/UserProfile/default.png`} alt={`${process.env.REACT_APP_API_URL}/UserProfile/default.png`} className="max-h-[3em]" />
         </div>
         <div className="form grow">
           <Formik
             initialValues={initialData}
             enableReinitialize={true}
             validationSchema={DisplayingErrorMessagesSchema}
-            onSubmit={(values, { setSubmitting }) => {
+            onSubmit={(values, { resetForm }) => {
               try {
-                setTimeout(() => {
-                  if (props.tweet) {
-                    // dispatch(updateCategory({ id: props.category.id, category_name: values.name, category_image: values.image }));
-                  } else {
-                    // dispatch(postCategoryAsync(values));
-                  }
-                  console.log('yokk');
-                  //   alert(JSON.stringify(values, null, 2));
-                  setSubmitting(false);
-                }, 400);
+                dispatch(postTweetAsync({ ...values, replyId }));
+                resetForm();
+                setViewImage(null);
               } catch (error) {
                 console.log(error);
               }
             }}
           >
-            {({ values, errors, touched, handleSubmit, isSubmitting, handleBlur, handleChange, setValues }) => {
+            {({ values, errors, touched, handleSubmit, isSubmitting, handleBlur, handleChange, setValues, resetForm }) => {
               return (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-[15px]">
-                  {/* <input type="text" onChange={handleChange} onBlur={handleBlur} value={values.name} name="name" /> */}
-                  <TextField
+                  <div className="inputCaption border-b pb-5">
+                    <textarea type="text" onChange={handleChange} onBlur={handleBlur} className="bg-black w-full  outline-none h-[3em] grow" placeholder="What is happening?!" multiple value={values.caption} name="caption" />
+                    {/* <TextField
                     // multiline
                     sx={{ input: { color: 'white' } }}
                     id="outlined-basic"
-                    label="What is happening?!"
+                    label=""
                     variant="outlined"
                     name="name"
                     value={values.name}
                     onBlur={handleBlur}
                     onChange={handleChange}
                     className="pl-[20px] pr-[15px] py-[20px]  rounded-xl w-full "
-                  />
-                  {touched.name && errors.name && <div>{errors.name}</div>}
-                  <input
-                    id="file"
-                    name="image"
-                    type="file"
-                    accept=".png, .jpg, .jpeg"
-                    onChange={(e) => {
-                      values.image = e.target.files[0];
-                      toBlob(e.target.files[0]);
-                    }}
-                    className="pl-[20px] pr-[15px] py-[15px]  rounded-xl w-full border "
-                  />
-                  {touched.image && errors.image && <div>{errors.image}</div>}
-                  {viewImage ? <p className="img-preview-wrapper">{<img src={viewImage} alt="preview" />}</p> : null}
-
-                  <button onClick={() => props.handleClose()} type="submit" className="bg-[#FF2351] text-[white] rounded-xl py-[20px] w-full my-[10px]" disabled={isSubmitting}>
-                    Submit
-                  </button>
+                  /> */}
+                    {touched.caption && errors.caption && <div>{errors.caption}</div>}
+                    {viewImage ? <p className="img-preview-wrapper flex justify-center">{<img className="max-h-[400px]" src={viewImage} alt="preview" />}</p> : null}
+                  </div>
+                  <div className="buttons flex justify-between items-center">
+                    <div className="inputIcon" aria-hidden="true">
+                      <input
+                        id="file"
+                        name="image"
+                        type="file"
+                        accept=".png, .jpg, .jpeg"
+                        onChange={(e) => {
+                          values.image = e.target.files[0];
+                          toBlob(e.target.files[0]);
+                        }}
+                        className="pl-[20px] pr-[15px] py-[5px]  rounded-xl max-w-[5em]"
+                      />
+                      {touched.image && errors.image && <div>{errors.image}</div>}
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (values.caption || values.image) props?.handleClose ? props.handleClose() : console.log();
+                      }}
+                      type="submit"
+                      className="dark:bg-[#1DA1F2] hover:dark:bg-[#1da0f2da] text-[white] rounded-3xl py-[10px] shrink-0 w-[90px] my-[10px]"
+                      disabled={isSubmit}
+                    >
+                      Tweet
+                    </button>
+                  </div>
                 </form>
               );
             }}

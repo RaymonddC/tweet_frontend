@@ -49,31 +49,36 @@ export const Sidebar = () => {
           </Link>
         </div>
       </div>
-      <div className="profile min-w-[100%] p-[13px] flex  rounded-[50px]  text-[15px]  w-full  hover:bg-[#8899a6] hover:bg-opacity-20">
-        <div className="avatar w-[40px] h-[40px] bg-[#FFCA40] rounded-full m-[12px]">{/* <img src={`http://localhost:5000/product_image/IMG1685974633294.png`} alt="" /> */}</div>
-        {/* <div className={`detail ${openMenu ? '' : 'invisible'}`}> */}
-        <div className={`detail align-middle grow text-left my-auto ${openMenu ? '' : ''}`}>
-          {/* {console.log(user)} */}
-          <p className="username">{user?.username || 'Please Login'}</p>
-          <p className="email">{user?.username ? `${user?.username}@gmail.com` : ''}@raymond000</p>
-        </div>
-        <div className="iconMore m-auto">
-          <MoreHorizRoundedIcon />
-        </div>
-        {user ? (
-          <div
-            className="logout"
-            onClick={() => {
-              dispatch(logoutAsync());
-              // <Navigate to={'/login'} />;
-            }}
-          >
-            <Link to={'/login'}>a{/* <LogoutRoundedIcon /> */}</Link>
+      <Link to={'/login'}>
+        <div className="profile min-w-[100%] p-[13px] flex  rounded-[50px]  text-[15px]  w-full  hover:bg-[#8899a6] hover:bg-opacity-20">
+          <div className="avatar w-[40px] h-[40px] bg-[#FFCA40] rounded-full m-[12px]">{/* <img src={`http://localhost:5000/product_image/IMG1685974633294.png`} alt="" /> */}</div>
+          {/* <div className={`detail ${openMenu ? '' : 'invisible'}`}> */}
+          <div className={`detail align-middle grow text-left my-auto ${openMenu ? '' : ''}`}>
+            {/* {console.log(user)} */}
+            <p className="username">{user?.username || 'Please Login'}</p>
+            <p className="email">{user?.username ? `${user?.username}@gmail.com` : ''}</p>
           </div>
-        ) : (
-          ''
-        )}
-      </div>
+          <div className="iconMore m-auto">
+            <MoreHorizRoundedIcon />
+          </div>
+          {user ? (
+            <div
+              className="logout"
+              onClick={() => {
+                dispatch(logoutAsync());
+                // <Navigate to={'/login'} />;
+              }}
+            >
+              {/* <Link to={'/login'}> */}
+              Lgout
+              {/* <LogoutRoundedIcon /> */}
+              {/* </Link> */}
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+      </Link>
     </div>
   );
 };

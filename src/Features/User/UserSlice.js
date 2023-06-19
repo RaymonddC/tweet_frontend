@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 const token = localStorage.getItem('token') ? localStorage?.getItem('token') : '';
 
 const initialState = {
-  List: [],
   user: {},
   isSubmitting: false,
 };
@@ -18,12 +17,6 @@ export const UserSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    onGetData: (initialState, action) => {
-      initialState.List = action.payload;
-    },
-    onSaveData: (initialState, action) => {
-      initialState.List = action.payload;
-    },
     onSaveUser: (initialState, action) => {
       console.log(action);
       initialState.user = action.payload;
@@ -45,25 +38,22 @@ export const keepLoginAsync = () => async (dispatch) => {
           Authorization: `bearer ${token}`,
         },
       });
-      if (response.data.message == 'jwt expired' || !response.data) throw {};
+      if (response?.data?.message == 'jwt expired' || !response?.data || response?.message) localStorage.removeItem('token');
       dispatch(onSaveUser(response.data.data));
     }
-  } catch (error) {}
+  } catch (error) {
+    if (error?.response?.data?.message == 'jwt expired') localStorage.removeItem('token');
+  }
 };
 
 export const logoutAsync = () => async (dispatch) => {
   try {
-    let id = localStorage.getItem('userId');
     let token = localStorage.getItem('token');
-    if (id && token) {
-      localStorage.clear('userId');
-      localStorage.clear('token');
-      dispatch(onSaveUser(null));
+    if (token) {
+      localStorage.removeItem('token');
+      dispatch(onSaveUser({}));
     }
-    console.log(localStorage.getItem('auth'), 'logout');
-    console.log('testlogout');
     toast.success('Logout Success!');
-    console.log('toast');
   } catch (error) {}
 };
 
@@ -280,5 +270,5 @@ export const activationAsync = (values) => async (dispatch) => {
 //   } catch (error) {}
 // };
 
-export const { onSaveData, onSaveUser, toggleBtn } = UserSlice.actions;
+export const { onSaveUser, toggleBtn } = UserSlice.actions;
 export default UserSlice.reducer;

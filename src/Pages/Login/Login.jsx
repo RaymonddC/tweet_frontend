@@ -51,7 +51,7 @@ export const Login = () => {
   }, [window.location.pathname]);
 
   console.log(user);
-  if (Object.keys(user).length !== 0) return <Navigate to={'/'} />;
+  if (!user || Object.keys(user).length !== 0) return <Navigate to={'/'} />;
 
   return (
     <div className="">
@@ -74,8 +74,12 @@ export const Login = () => {
               <Formik
                 initialValues={{ usernameOrEmail: '', password: '', email: '', confirmPassword: '' }}
                 validationSchema={isRegis ? SignupSchema : LoginSchema}
-                onSubmit={(values) => {
+                onSubmit={(values, { resetForm }) => {
                   dispatch(isRegis ? onRegister(values) : onLoginAsync(values));
+                  if (!isRegis) resetForm();
+                  else {
+                    return <Navigate to={'/login'} />;
+                  }
                 }}
               >
                 {({
@@ -85,6 +89,7 @@ export const Login = () => {
                   handleChange,
                   handleBlur,
                   handleSubmit,
+                  resetForm,
 
                   /* and other goodies */
                 }) => (

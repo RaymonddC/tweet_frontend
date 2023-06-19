@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { keepLoginAsync } from './Features/User/UserSlice';
 import { Verify } from './Pages/Verify/Verify';
 import { Profile } from './Pages/Profile/Profile';
+import { DetailTweet } from './Pages/DetailTweet/DetailTweet';
 
 function App() {
   const dispatch = useDispatch();
@@ -49,7 +50,17 @@ function App() {
             path="/profile"
             element={
               <Layout>
+                <></>
                 <Profile />
+              </Layout>
+            }
+          />
+          <Route
+            path="/details/:id"
+            element={
+              <Layout>
+                <></>
+                <DetailTweet />
               </Layout>
             }
           />
