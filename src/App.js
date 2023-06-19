@@ -43,12 +43,10 @@ function App() {
           <Route
             path="/activation"
             element={
-              <AccountRoute>
-                <Layout>
-                  <div></div>
-                  <Verify />
-                </Layout>
-              </AccountRoute>
+              <Layout>
+                <div></div>
+                <Verify />
+              </Layout>
             }
           />
           <Route
